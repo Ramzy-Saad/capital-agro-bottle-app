@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bottle_id')->constrained()->onDelete('set null');
+            $table->foreignId('bottle_id')->nullable()->constrained()->onDelete('set null');
             $table->decimal('total_price', 10, 2);
             $table->timestamps();
         });
