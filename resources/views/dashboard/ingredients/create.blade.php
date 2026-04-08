@@ -13,15 +13,15 @@
 
     <div class="mb-3">
         <label class="form-label">Price</label>
-        <input type="number" class="form-control" name="price" step="0.01" required>
+        <input type="number" class="form-control" min="0" name="price" step="0.01" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Unit</label>
         <select name="unit" class="form-select" required>
-            <option value="g">Gram</option>
-            <option value="ml">ML</option>
-            <option value="piece">Piece</option>
+            @foreach($units as $key => $label)
+                <option value="{{ $key }}">{{ $label }}</option>
+            @endforeach
         </select>
     </div>
 

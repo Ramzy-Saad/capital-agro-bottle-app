@@ -12,7 +12,7 @@
 
     <div class="mb-3">
         <label class="form-label">Base Price</label>
-        <input type="number" class="form-control" name="base_price" step="0.01" required>
+        <input type="number" class="form-control" min="0" name="base_price" step="0.01" required>
     </div>
 
     <button type="submit" class="btn btn-success">Save</button>

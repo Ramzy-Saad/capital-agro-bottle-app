@@ -14,15 +14,15 @@
 
     <div class="mb-3">
         <label class="form-label">Price</label>
-        <input type="number" class="form-control" name="price" step="0.01" value="{{ $ingredient->price }}" required>
+        <input type="number" class="form-control" min="0" name="price" step="0.01" value="{{ $ingredient->price }}" required>
     </div>
 
     <div class="mb-3">
         <label class="form-label">Unit</label>
         <select name="unit" class="form-select" required>
-            <option value="g" @if($ingredient->unit=='g') selected @endif>Gram</option>
-            <option value="ml" @if($ingredient->unit=='ml') selected @endif>ML</option>
-            <option value="piece" @if($ingredient->unit=='piece') selected @endif>Piece</option>
+            @foreach($units as $key => $label)
+                <option value="{{ $key }}" {{ $ingredient->unit == $key ? 'selected' : '' }}>{{ $label }}</option>
+            @endforeach
         </select>
     </div>
 

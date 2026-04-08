@@ -15,7 +15,8 @@ class IngredientController extends Controller
 
     public function create()
     {
-        return view('dashboard.ingredients.create');
+        $units = Ingredient::UNITS;
+        return view('dashboard.ingredients.create', compact('units'));
     }
 
     public function store(Request $request)
@@ -34,7 +35,9 @@ class IngredientController extends Controller
     public function edit($id)
     {
         $ingredient = Ingredient::findOrFail($id);
-        return view('dashboard.ingredients.edit', compact('ingredient'));
+        $units = Ingredient::UNITS;
+
+        return view('dashboard.ingredients.edit', compact('ingredient', 'units'));
     }
 
     public function update(Request $request, $id)
