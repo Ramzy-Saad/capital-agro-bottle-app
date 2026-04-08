@@ -1,89 +1,96 @@
 @extends('layouts.app')
 
 @section('content')
-    <h2>Create Order</h2>
+<h2>Create Order</h2>
 
-    <form method="POST" action="{{ route('order.store') }}">
-        @csrf
+<form method="POST" action="{{ route('order.store') }}">
+    @csrf
 
-        <!-- Select Bottle -->
-        <div class="mb-3">
-            <label class="form-label">Select Bottle</label>
-            <select name="bottle_id" class="form-select" required>
-                <option value="">-- Choose Bottle --</option>
-                @foreach($bottles as $bottle)
-                    <option value="{{ $bottle->id }}" data-price="{{ $bottle->base_price }}">
-                        {{ $bottle->name }} (${{ $bottle->base_price }})
+    @dd($bottles)
+    <div id="items-wrapper">
+
+        <div class="item mb-4 p-3 border">
+            <label>Bottle</label>
+            <select name="items[0][bottle_id]" class="form-control bottle-select">
+                <option value="">Select Bottle</option>
+
+                @foreach($bottles??[] as $bottle)
+                    <option value="{{ $bottle?->id }}">
+                        {{ $bottle->name }} ({{ $bottle->base_price }})
                     </option>
                 @endforeach
             </select>
+
+            <div class="attributes mt-3"></div>
         </div>
 
-        <!-- Ingredients -->
-        <h4>Ingredients</h4>
-        <div class="row" id="ingredients-container">
-            @foreach($ingredients as $ingredient)
-                <div class="col-md-4 mb-2 ingredient-card">
-                    <div class="card p-2">
-                        <div class="form-check">
-                            <input class="form-check-input ingredient-checkbox" type="checkbox"
-                                name="ingredients[{{ $ingredient->id }}][id]" value="{{ $ingredient->id }}"
-                                data-price="{{ $ingredient->price }}">
-                            <label class="form-check-label">
-                                {{ $ingredient->name }} ({{ $ingredient->unit }}) - ${{ $ingredient->price }}
-                            </label>
-                        </div>
+    </div>
 
-                        <input type="number" min="0" step="0.01" class="form-control mt-1 ingredient-qty"
-                            name="ingredients[{{ $ingredient->id }}][quantity]" value="0" disabled>
-                    </div>
-                </div>
-            @endforeach
-        </div>
+    <button type="button" id="add-item" class="btn btn-secondary mb-3">
+        Add Another Bottle
+    </button>
 
-        <!-- Total Price -->
-        <div class="mt-3">
-            <h4>Total: $<span id="total-price">0.00</span></h4>
-        </div>
+    <button type="submit" class="btn btn-success">Submit Order</button>
+</form>
+<script>
+    let bottles = @json($bottles);
+    let index = 0;
 
-        <button type="submit" class="btn btn-success mt-2">Create Order</button>
-    </form>
-@endsection
+    document.getElementById('add-item').addEventListener('click', function () {
+        index++;
 
-@section('scripts')
-    <script>
-        const bottleSelect = document.querySelector('select[name="bottle_id"]');
-        const ingredientCheckboxes = document.querySelectorAll('.ingredient-checkbox');
-        const ingredientQtys = document.querySelectorAll('.ingredient-qty');
-        const totalPriceEl = document.getElementById('total-price');
+        let html = `
+        <div class="item mb-4 p-3 border">
+            <label>Bottle</label>
+            <select name="items[${index}][bottle_id]" class="form-control bottle-select">
+                <option value="">Select Bottle</option>
+                ${bottles.map(b => `<option value="${b.id}">${b.name} (${b.base_price})</option>`).join('')}
+            </select>
 
-        function calculateTotal() {
-            let total = 0;
+            <div class="attributes mt-3"></div>
+        </div>`;
 
-            // bottle price
-            const selectedBottle = bottleSelect.selectedOptions[0];
-            if (selectedBottle) total += parseFloat(selectedBottle.dataset.price);
+        document.getElementById('items-wrapper').insertAdjacentHTML('beforeend', html);
+    });
 
-            ingredientCheckboxes.forEach((checkbox, i) => {
-                if (checkbox.checked) {
-                    const qty = parseFloat(ingredientQtys[i].value) || 0;
-                    total += parseFloat(checkbox.dataset.price) * qty;
-                }
+    document.addEventListener('change', function (e) {
+        if (e.target.classList.contains('bottle-select')) {
+
+            let bottleId = e.target.value;
+            let itemDiv = e.target.closest('.item');
+            let attrDiv = itemDiv.querySelector('.attributes');
+
+            let bottle = bottles.find(b => b.id == bottleId);
+
+            if (!bottle) {
+                attrDiv.innerHTML = '';
+                return;
+            }
+
+            let itemIndex = e.target.name.match(/\d+/)[0];
+
+            let html = '';
+
+            bottle.attributes.forEach(attr => {
+                html += `<div class="mb-2">
+                    <strong>${attr.name}</strong><br>`;
+
+                attr.options.forEach(option => {
+                    html += `
+                        <label>
+                            <input type="checkbox"
+                                   name="items[${itemIndex}][options][]"
+                                   value="${option.id}">
+                            ${option.name} (+${option.price})
+                        </label><br>
+                    `;
+                });
+
+                html += `</div>`;
             });
 
-            totalPriceEl.textContent = total.toFixed(2);
+            attrDiv.innerHTML = html;
         }
-
-        bottleSelect.addEventListener('change', calculateTotal);
-
-        ingredientCheckboxes.forEach((checkbox, i) => {
-            checkbox.addEventListener('change', () => {
-                ingredientQtys[i].disabled = !checkbox.checked;
-                if (!checkbox.checked) ingredientQtys[i].value = 0;
-                calculateTotal();
-            });
-
-            ingredientQtys[i].addEventListener('input', calculateTotal);
-        });
-    </script>
+    });
+</script>
 @endsection

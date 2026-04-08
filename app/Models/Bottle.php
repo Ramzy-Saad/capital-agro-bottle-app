@@ -9,6 +9,6 @@ class Bottle extends Model
     protected $guarded = [];
     public function attributes()
     {
-        return $this->belongsToMany(Attribute::class);
+        return $this->belongsToMany(Attribute::class,'attribute_bottles');
     }
 }

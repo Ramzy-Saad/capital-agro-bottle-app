@@ -16,6 +16,19 @@
         <label class="form-label">Base Price</label>
         <input type="number" class="form-control" min="0" name="base_price" step="0.01" value="{{ $bottle->base_price }}" required>
     </div>
+    @foreach($attributes as $attribute)
+        <div class="form-check">
+            <input class="form-check-input"
+                type="checkbox"
+                name="attributes[]"
+                value="{{ $attribute->id }}"
+                {{ $bottle->attributes->contains($attribute->id) ? 'checked' : '' }}>
+
+            <label class="form-check-label">
+                {{ $attribute->name }}
+            </label>
+        </div>
+    @endforeach
 
     <button type="submit" class="btn btn-success">Update</button>
 </form>

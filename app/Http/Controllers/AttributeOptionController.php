@@ -23,6 +23,6 @@ class AttributeOptionController extends Controller
             'price' => $request->price,
         ]);
 
-        return back();
+        return redirect()->route('attributes.index')->with('success', 'Attribute option created successfully.');
     }
 }

@@ -12,7 +12,26 @@ class OrderController extends Controller
 {
     public function create()
     {
-        $bottles = Bottle::with('attributes.options')->get();
+        $bottles = Bottle::with('attributes.options')->get()->map(function($b){
+            return [
+                'id' => $b->id,
+                'name' => $b->name,
+                'base_price' => $b->base_price,
+                'attributes' => $b->attributes->map(function($a){
+                    return [
+                        'id' => $a->id,
+                        'name' => $a->name,
+                        'options' => $a->options->map(function($o){
+                            return [
+                                'id' => $o->id,
+                                'name' => $o->name,
+                                'price' => $o->price
+                            ];
+                        })->toArray(), // مهم جداً
+                    ];
+                })->toArray(),
+            ];
+        });
         return view('orders.create', compact('bottles'));
     }
 

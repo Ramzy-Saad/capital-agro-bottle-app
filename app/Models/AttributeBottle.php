@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class AttributeBottle extends Model
 {
-    //
+    protected $guarded = [];
+    protected $table = 'attribute_bottles';
 }

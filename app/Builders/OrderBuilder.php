@@ -14,9 +14,17 @@ class OrderBuilder
         $bottle = Bottle::find($item['bottle_id']);
 
         $itemTotal = $bottle->base_price;
+        foreach ($item['options'] ?? [] as $attributeId => $optionId) {
 
-        foreach ($item['options'] ?? [] as $optionId) {
             $option = AttributeOption::find($optionId);
+
+            if (!$option) continue;
+
+            $bottle->options()->create([
+                'attribute_option_id' => $option->id,
+                'price' => $option->price,
+            ]);
+
             $itemTotal += $option->price;
         }
 

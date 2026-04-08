@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item"><a class="nav-link" href="{{ route('bottles.index') }}">Bottles</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('ingredients.index') }}">Ingredients</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('attributes.index') }}">Attributes</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ url('/order/create') }}">Create Order</a></li>
                 </ul>
             </div>
