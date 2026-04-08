@@ -14,7 +14,8 @@ class Order extends Model
 
     public function ingredients()
     {
-        return $this->belongsToMany(Ingredient::class)
-            ->withPivot('price', 'quantity');
+        return $this->belongsToMany(Ingredient::class, 'order_ingredients')
+                    ->withPivot('quantity', 'price')
+                    ->withTimestamps();
     }
 }
