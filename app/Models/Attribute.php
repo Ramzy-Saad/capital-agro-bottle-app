@@ -1,0 +1,20 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Attribute extends Model
+{
+    protected $guarded = [];
+
+    public function options()
+    {
+        return $this->hasMany(AttributeOption::class);
+    }
+
+    public function bottles()
+    {
+        return $this->belongsToMany(Bottle::class);
+    }
+}

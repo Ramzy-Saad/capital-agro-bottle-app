@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attribute;
 use App\Models\Bottle;
 use Illuminate\Http\Request;
 
@@ -15,17 +16,19 @@ class BottleController extends Controller
 
     public function create()
     {
-        return view('dashboard.bottles.create');
+        $attributes = Attribute::with('options')->get();
+
+        return view('dashboard.bottles.create', compact('attributes'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'base_price' => 'required|numeric'
+        $bottle = Bottle::create([
+            'name' => $request->name,
+            'base_price' => $request->base_price,
         ]);
 
-        Bottle::create($request->all());
+        $bottle->attributes()->sync($request->attributes);
 
         return redirect()->route('bottles.index');
     }
@@ -33,7 +36,8 @@ class BottleController extends Controller
     public function edit($id)
     {
         $bottle = Bottle::findOrFail($id);
-        return view('dashboard.bottles.edit', compact('bottle'));
+        $attributes = Attribute::with('options')->get();
+        return view('dashboard.bottles.edit', compact('bottle','attributes'));
     }
 
     public function update(Request $request, $id)
@@ -41,6 +45,7 @@ class BottleController extends Controller
         $bottle = Bottle::findOrFail($id);
 
         $bottle->update($request->all());
+        $bottle->attributes()->sync($request->attributes);
 
         return redirect()->route('bottles.index');
     }

@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('ingredients', function (Blueprint $table) {
-            $table->string('unit')->change();
+        Schema::create('attribute_options', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('attribute_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->decimal('price', 10, 2)->default(0);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('ingredients', function (Blueprint $table) {
-            $table->enum('unit', ['g', 'ml', 'pcs'])->change();
-        });
+        Schema::dropIfExists('attribute_options');
     }
 };

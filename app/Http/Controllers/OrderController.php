@@ -2,35 +2,32 @@
 
 namespace App\Http\Controllers;
 
+use App\Builders\OrderBuilder;
+use App\Models\AttributeOption;
 use App\Models\Bottle;
-use App\Models\Ingredient;
-use App\Services\OrderService;
-use App\Strategies\Pricing\DefaultPricing;
+use App\Models\Order;
 use Illuminate\Http\Request;
-
 
 class OrderController extends Controller
 {
     public function create()
     {
-        $bottles = Bottle::all();
-        $ingredients = Ingredient::all();
-        return view('orders.create', compact('bottles', 'ingredients'));
+        $bottles = Bottle::with('attributes.options')->get();
+        return view('orders.create', compact('bottles'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
-            'bottle_id' => 'required|exists:bottles,id',
-            'ingredients.*.quantity' => 'nullable|numeric|min:0'
+        $builder = new OrderBuilder();
+
+        foreach ($request->items as $item) {
+            $builder->addItem($item);
+        }
+
+        Order::create([
+            'total_price' => $builder->getTotal(),
         ]);
 
-        $bottle = Bottle::findOrFail($request->bottle_id);
-
-        $service = new OrderService(new DefaultPricing());
-
-        $order = $service->create($bottle, $request->ingredients ?? []);
-
-        return redirect()->back()->with('success', 'Order Created! Total: $' . $order->total_price);
+        return back()->with('success', 'Order Created');
     }
 }
